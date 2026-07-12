@@ -120,6 +120,15 @@ def parse_govpl(source, url, prefix):
     return items
 
 
+def load_previous():
+    """Wczytuje poprzedni news.json, by pamiętać godzinę pierwszego pojawienia się wpisu."""
+    try:
+        with open(OUTPUT, encoding="utf-8") as f:
+            return {i["link"]: i.get("date", "") for i in json.load(f)}
+    except Exception:
+        return {}
+
+
 def main():
     collected = []
     for source, url in RSS_FEEDS:
@@ -136,6 +145,20 @@ def main():
             collected += got
         except Exception as e:
             print(f"[BŁĄD] gov.pl {source}: {e}")
+
+    # Wpisy bez godziny (listy gov.pl podają samą datę): jeśli wpis był już
+    # w poprzednim news.json — zachowaj jego godzinę; jeśli jest nowy — zapisz
+    # godzinę dodania (teraz).
+    previous = load_previous()
+    now_pl = datetime.now(ZoneInfo("Europe/Warsaw")).strftime("%H:%M")
+    for i in collected:
+        if "·" in i["date"]:
+            continue  # ma już godzinę (RSS)
+        prev = previous.get(i["link"], "")
+        if "·" in prev:
+            i["date"] = prev
+        elif i["date"]:
+            i["date"] = i["date"] + " · " + now_pl
 
     collected.sort(key=lambda i: i["sort"], reverse=True)
     out = [{k: i[k] for k in ("title", "link", "date", "source", "summary")}
