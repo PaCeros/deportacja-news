@@ -1,13 +1,9 @@
-# Ten plik na GitHubie musi się znaleźć pod ścieżką:
-#   .github/workflows/aktualnosci.yml
-# (instrukcja w INSTRUKCJA.md)
-
 name: Aktualnosci migracyjne
 
 on:
   schedule:
-    - cron: "12,42 * * * *"   # co 30 minut; wersja co godzinę: "12 * * * *"
-  workflow_dispatch:           # dodaje przycisk "Run workflow" do ręcznych testów
+    - cron: "12,42 * * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -16,9 +12,9 @@ jobs:
   pobierz:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
