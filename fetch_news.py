@@ -16,6 +16,7 @@ import re
 import html
 import urllib.request
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from email.utils import parsedate_to_datetime
 from xml.etree import ElementTree
 
@@ -82,9 +83,9 @@ def parse_rss(source, url):
         raw = it.findtext("pubDate")
         if raw:
             try:
-                d = parsedate_to_datetime(raw)
+                d = parsedate_to_datetime(raw).astimezone(ZoneInfo("Europe/Warsaw"))
                 sort = d.isoformat()
-                date_pl = d.strftime("%d.%m.%Y")
+                date_pl = d.strftime("%d.%m.%Y · %H:%M")
             except Exception:
                 pass
         if title and link:
