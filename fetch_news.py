@@ -150,15 +150,25 @@ def main():
     # w poprzednim news.json — zachowaj jego godzinę; jeśli jest nowy — zapisz
     # godzinę dodania (teraz).
     previous = load_previous()
-    now_pl = datetime.now(ZoneInfo("Europe/Warsaw")).strftime("%H:%M")
+    now_warsaw = datetime.now(ZoneInfo("Europe/Warsaw"))
+    now_pl = now_warsaw.strftime("%H:%M")
     for i in collected:
         if "·" in i["date"]:
             continue  # ma już godzinę (RSS)
         prev = previous.get(i["link"], "")
-        if "·" in prev:
-            i["date"] = prev
+        if prev:
+            i["date"] = prev  # wpis już znany — zachowaj godzinę dodania
         elif i["date"]:
             i["date"] = i["date"] + " · " + now_pl
+        else:
+            # gov.pl nie podało daty — zapisz moment wykrycia wpisu
+            i["date"] = now_warsaw.strftime("%d.%m.%Y") + " · " + now_pl
+        # ustaw klucz sortowania z zapisanej daty
+        try:
+            i["sort"] = datetime.strptime(i["date"], "%d.%m.%Y · %H:%M") \
+                .replace(tzinfo=ZoneInfo("Europe/Warsaw")).isoformat()
+        except ValueError:
+            pass
 
     collected.sort(key=lambda i: i["sort"], reverse=True)
     out = [{k: i[k] for k in ("title", "link", "date", "source", "summary")}
