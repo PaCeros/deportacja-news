@@ -1,0 +1,34 @@
+# Ten plik na GitHubie musi się znaleźć pod ścieżką:
+#   .github/workflows/aktualnosci.yml
+# (instrukcja w INSTRUKCJA.md)
+
+name: Aktualnosci migracyjne
+
+on:
+  schedule:
+    - cron: "12,42 * * * *"   # co 30 minut; wersja co godzinę: "12 * * * *"
+  workflow_dispatch:           # dodaje przycisk "Run workflow" do ręcznych testów
+
+permissions:
+  contents: write
+
+jobs:
+  pobierz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pobierz aktualnosci
+        run: python fetch_news.py
+
+      - name: Zapisz news.json
+        run: |
+          git config user.name "news-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add news.json
+          git diff --cached --quiet || git commit -m "Aktualizacja aktualnosci"
+          git push
