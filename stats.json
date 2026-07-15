@@ -1,0 +1,10 @@
+{
+  "dzienneTempo": 30,
+  "ticker": [
+    { "value": "9 442", "text": "2025: {v} wykonane decyzje powrotowe (SG)" },
+    { "value": "2 700", "text": "I kw. 2026: {v} deportacji (MSWiA)" },
+    { "value": "14,7 tys.", "text": "2025: {v} wydanych decyzji o zobowiązaniu do powrotu" },
+    { "value": "65%", "text": "skuteczność decyzji powrotowych w PL: {v} — średnia UE: 30%" },
+    { "value": "81 tys.", "text": "2025: {v} kontroli legalności pobytu" }
+  ]
+}
